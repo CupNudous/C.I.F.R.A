@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>C.I.F.R.A - Página Inicial</title>
+</head>
+<body>
+    <h1>Bem-vindo(a) ao C.I.F.R.A!</h1>
+    <p>Você está logado como: {{ request.user.username }}</p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Sair</button>
+    </form>
+</body>
+</html>
