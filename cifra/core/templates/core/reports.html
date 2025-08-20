@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% block title %}Relatórios - C.I.F.R.A{% endblock %}
+{% block content %}
+<h1>Relatórios</h1>
+<p>Lista de relatórios gerados para treinamentos.</p>
+{% for report in reports %}
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">{{ report.title }}</h5>
+        <p class="card-text">{{ report.description }}</p>
+        <a href="{% url 'reports' report.id %}" class="btn btn-primary btn-sm">Ver Detalhes</a>
+    </div>
+</div>
+{% empty %}
+<p>Nenhum relatório disponível.</p>
+{% endfor %}
+{% endblock %}

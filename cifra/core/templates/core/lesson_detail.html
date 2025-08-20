@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}
+{% block title %}{{ lesson.title }} - {{ module.title }}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'training' %}">Treinamentos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ module.title }}</li>
+    <li class="breadcrumb-item active" aria-current="page">{{ lesson.title }}</li>
+  </ol>
+</nav>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h2 class="card-title">{{ lesson.title }}</h2>
+    <p class="text-muted mb-3">Módulo: {{ module.title }}</p>
+    <div class="lesson-content">
+      {{ content_html|safe }}
+    </div>
+    {% if lesson.resources_file %}
+      <hr>
+      <a class="btn btn-outline-secondary btn-sm" href="{{ lesson.resources_file.url }}" download>Baixar material (PDF/DOCX)</a>
+    {% endif %}
+  </div>
+</div>
+
+<a class="btn btn-link" href="{% url 'training' %}">&larr; Voltar aos Treinamentos</a>
+{% endblock %}

@@ -1,7 +1,53 @@
-<h2>Registrar-se</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Cadastrar</button>
-</form>
-<a href="{% url 'login' %}">Já tem conta? Faça login</a>
+<!-- core/templates/core/register.html -->
+{% extends "core/base.html" %}
+
+{% block title %}Cadastro - C.I.F.R.A{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="mb-4 text-center">Criar Conta</h2>
+
+            <form method="post" class="card p-4 shadow-sm">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="id_username" class="form-label">Usuário</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">Email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password1" class="form-label">Senha</label>
+                    {{ form.password1 }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_password2" class="form-label">Confirmar Senha</label>
+                    {{ form.password2 }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_role" class="form-label">Tipo de Conta</label>
+                    {{ form.role }}
+                    <small class="form-text text-muted">
+                        Funcionário: acesso aos treinamentos.<br>
+                        Admin TI: acesso aos relatórios e gerenciamento.
+                    </small>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Registrar</button>
+            </form>
+
+            <div class="text-center mt-3">
+                <p>Já possui conta? <a href="{% url 'login' %}">Entre aqui</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

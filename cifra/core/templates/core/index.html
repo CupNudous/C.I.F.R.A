@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8" />
-    <title>C.I.F.R.A - Página Inicial</title>
-</head>
-<body>
-    <h1>Bem-vindo(a) ao C.I.F.R.A!</h1>
-    <p>Você está logado como: {{ request.user.username }}</p>
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Sair</button>
-    </form>
-</body>
-</html>
+{% extends 'core/base.html' %}
+{% block title %}Início - C.I.F.R.A{% endblock %}
+{% block content %}
+<h1>Bem-vindo ao C.I.F.R.A</h1>
+<p>Escolha uma das funcionalidades abaixo:</p>
+
+<div class="list-group">
+    <a href="{% url 'training' %}" class="list-group-item list-group-item-action">Treinamentos</a>
+    <a href="{% url 'attempts' %}" class="list-group-item list-group-item-action">Histórico de Tentativas</a>
+    <a href="{% url 'ranking' %}" class="list-group-item list-group-item-action">Ranking</a>
+    <a href="{% url 'achievements' %}" class="list-group-item list-group-item-action">Conquistas</a>
+    <a href="{% url 'reports' %}" class="list-group-item list-group-item-action">Relatórios</a>
+    <a href="{% url 'about' %}" class="list-group-item list-group-item-action">Sobre o Sistema</a>
+    <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">Configurações</a>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% block title %}Histórico - C.I.F.R.A{% endblock %}
+{% block content %}
+<h1>Histórico de Tentativas</h1>
+<p>Aqui serão listadas todas as tentativas do usuário.</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Treinamento</th>
+            <th>Data</th>
+            <th>Correta?</th>
+            <th>Pontuação</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attempt in attempts %}
+        <tr>
+            <td>{{ attempt.simulation.title }}</td>
+            <td>{{ attempt.timestamp|date:"d/m/Y H:i" }}</td>
+            <td>{% if attempt.is_correct %}✅{% else %}❌{% endif %}</td>
+            <td>{{ attempt.score_delta }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Nenhuma tentativa registrada.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

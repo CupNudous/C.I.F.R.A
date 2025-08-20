@@ -1,0 +1,264 @@
+{% extends 'core/base.html' %}
+{% block title %}Treinamento - C.I.F.R.A{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1>Treinamento C.I.F.R.A</h1>
+      <p class="lead">
+        Bem-vindo à seção de treinamento da plataforma <strong>C.I.F.R.A</strong> —
+        Checagem Inteligente de Fraudas e Riscos Associados. Aqui você encontrará
+        módulos com conteúdo teórico e prático para melhorar sua postura de segurança.
+      </p>
+    </div>
+    <div class="col-md-4 text-md-end align-self-center">
+      <a class="btn btn-outline-primary" href="{% url 'index' %}">Voltar ao painel</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Coluna principal: módulos e lições -->
+    <div class="col-lg-8">
+      <section class="mb-4">
+        <h2>Módulos Disponíveis</h2>
+        {% if modules %}
+          {% for module in modules %}
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <h5 class="card-title mb-1">{{ module.title }}</h5>
+                    {% if module.summary %}
+                      <p class="text-muted small mb-2">{{ module.summary }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="text-end">
+                    <small class="text-muted">Lições: {{ module.lessons.count }}</small>
+                  </div>
+                </div>
+
+                <ul class="list-group list-group-flush mt-2">
+                  {% for lesson in module.lessons.all %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <!-- link tem href (fallback), e data- attributes para o modal -->
+                        <a href="{% url 'lesson_detail' module.slug lesson.slug %}"
+                           class="lesson-link"
+                           data-url="{% url 'lesson_detail' module.slug lesson.slug %}">
+                          {{ lesson.title }}
+                        </a>
+                        <div class="small text-muted">Atualizado: {{ lesson.created_at|date:"d/m/Y" }}</div>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item">Nenhuma lição disponível neste módulo.</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Nenhum módulo encontrado. Entre em contato com o administrador.</p>
+        {% endif %}
+      </section>
+
+      <!-- Sessão de Exercícios (link para área de quizzes ou simulations) -->
+      <section class="mb-4">
+        <h3>Pratique</h3>
+        <p>Coloque seus conhecimentos em prática com exercícios e simulações interativas.</p>
+
+        <!-- Lista de simulações (inserida aqui) -->
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Simulações</h5>
+            <p class="small text-muted">Emails, sites falsos e quizzes. Abra para praticar.</p>
+
+            <ul class="list-group">
+              {% for sim in simulations %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{{ sim.title }}</strong>
+                    <small class="text-muted">({{ sim.get_type_display }})</small>
+                    {% if sim.description %}
+                      <div class="small text-muted">{{ sim.description|truncatechars:100 }}</div>
+                    {% endif %}
+                  </div>
+                  <div>
+                    </a>
+                  </div>
+                </li>
+              {% empty %}
+                <li class="list-group-item">Nenhuma simulação disponível.</li>
+              {% endfor %}
+            </ul>
+
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- Coluna lateral: material, vídeo e infos rápidas -->
+    <div class="col-lg-4">
+      <!-- Material Didático -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Material Didático</h5>
+          <p class="card-text">Baixe os materiais complementares para estudo offline.</p>
+          <!-- exibe um link de download global ou lista de recursos por lesson -->
+          <a href="#" class="btn btn-outline-secondary btn-sm disabled">Guia Completo (em breve)</a>
+          <p class="mt-2 small text-muted">Se desejar, envie materiais ao administrador para inclusão.</p>
+        </div>
+      </div>
+
+      <!-- Vídeo de Introdução -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Vídeo de Introdução</h5>
+          <p class="card-text">Assista a uma breve introdução sobre os objetivos do treinamento.</p>
+          <small class="text-muted d-block mt-2">Duração estimada: 5 minutos</small>
+        </div>
+      </div>
+
+      <!-- Contato / Suporte -->
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Suporte</h6>
+          <p class="small mb-1">Dúvidas? Reporte incidentes ou solicite suporte ao time de segurança.</p>
+          <a href="mailto:seguranca@empresa.com" class="small">seguranca@empresa.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Bootstrap único para exibir lições e simulações rapidamente -->
+<div class="modal fade" id="lessonModal" tabindex="-1" aria-labelledby="lessonModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lessonModalLabel">Carregando...</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <div id="lessonModalBody">
+          <p>Carregando conteúdo...</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a id="openInTab" class="btn btn-outline-secondary btn-sm" target="_blank" href="#">Abrir em nova aba</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts: AJAX para modal e submissões (delegation) -->
+<script>
+// CSRF helper
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+const csrftoken = getCookie('csrftoken');
+
+document.addEventListener('DOMContentLoaded', function() {
+  const modalEl = document.getElementById('lessonModal');
+  const bsModal = new bootstrap.Modal(modalEl);
+  const modalBody = document.getElementById('lessonModalBody');
+  const modalTitle = document.getElementById('lessonModalLabel');
+  const openInTab = document.getElementById('openInTab');
+
+  // Abre simulação ou lição via AJAX
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('.open-simulation, .lesson-link');
+    if (!a) return;
+    e.preventDefault();
+
+    const url = a.dataset.url || a.href;
+    if (!url) return;
+
+    openInTab.href = url;
+    modalTitle.textContent = 'Carregando...';
+    modalBody.innerHTML = '<p>Carregando conteúdo...</p>';
+    bsModal.show();
+
+    fetch(url, {
+      headers: {'X-Requested-With': 'XMLHttpRequest'},
+      credentials: 'same-origin'
+    })
+      .then(resp => {
+        if (!resp.ok) throw new Error('Erro ao carregar conteúdo');
+        const ct = resp.headers.get('content-type') || '';
+        if (ct.includes('application/json')) return resp.json();
+        return resp.text();
+      })
+      .then(data => {
+        if (typeof data === 'object') {
+          modalTitle.textContent = data.title || 'Conteúdo';
+          modalBody.innerHTML = data.content_html || '';
+        } else {
+          // HTML foi retornado (fragmento) -> insere direto
+          modalTitle.textContent = 'Conteúdo';
+          modalBody.innerHTML = data;
+        }
+      })
+      .catch(err => {
+        modalTitle.textContent = 'Erro';
+        modalBody.innerHTML = '<div class="alert alert-danger">Não foi possível carregar o conteúdo.</div>';
+        console.error(err);
+      });
+  });
+
+  // Submissão via AJAX de qualquer formulário dentro do modal
+  document.addEventListener('submit', function(e) {
+    const form = e.target.closest('form');
+    if (!form) return;
+    // só intercepta formulários que estejam dentro do modal
+    if (!modalEl.contains(form)) return;
+
+    e.preventDefault();
+
+    const url = form.action || window.location.href;
+    const method = (form.method || 'get').toUpperCase();
+    const formData = new FormData(form);
+
+    const opts = {
+      method: method,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': csrftoken
+      },
+      credentials: 'same-origin'
+    };
+
+    if (method === 'GET') {
+      // transforma em query string
+      const qs = new URLSearchParams(formData).toString();
+      fetch(url + (url.includes('?') ? '&' : '?') + qs, opts)
+        .then(r => r.text())
+        .then(html => { modalBody.innerHTML = html; })
+        .catch(err => { modalBody.innerHTML = `<div class="alert alert-danger">Erro ao enviar: ${err.message}</div>`; console.error(err); });
+      return;
+    }
+
+    opts.body = formData;
+
+    fetch(url, opts)
+      .then(resp => {
+        if (!resp.ok) throw new Error('Erro na submissão');
+        return resp.text();
+      })
+      .then(text => {
+        // substitui o conteúdo do modal pelo retorno (fragmento de resultado)
+        modalBody.innerHTML = text;
+      })
+      .catch(err => {
+        modalBody.innerHTML = `<div class="alert alert-danger">Erro ao enviar: ${err.message}</div>`;
+        console.error(err);
+      });
+  });
+
+});
+</script>
+{% endblock %}

@@ -48,9 +48,24 @@ REST_FRAMEWORK = {
     ),
 }
 
+SECURITY_FILTER = {
+    'ACTION': 'block',          # 'block' | 'redirect' | 'log'
+    'REDIRECT_TO': '/login/',
+    'EXEMPT_PATHS': ['/static/', '/health/', '/favicon.ico'],
+    'EXEMPT_IPS': ['127.0.0.1', '::1'],
+    'EXEMPT_USER_AGENTS': ['ELB-HealthChecker'],  # exemplos
+    'LOG_ONLY': False,          # True -> só loga (útil em staging)
+    'RATE_LIMIT': {'WINDOW': 60, 'MAX': 120},  # max requests por IP por janela
+    'BLOCK_DURATION': 300,      # tempo para bloquear ip depois de rate-limit
+    'WHITELIST_METHODS': [],    # ex: ['GET','HEAD'] para não checar
+    'INSPECT_HEADERS': ['referer', 'user-agent', 'host', 'origin', 'cookie'],
+    'MAX_BODY_INSPECT_SIZE': 8 * 1024,
+}
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'core.middleware.SecurityFilterMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,6 +98,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cifra.wsgi.application'
 
+# Garantir que cookies funcionem no HTTP (localhost)
+SESSION_COOKIE_SECURE = False      # False em localhost, True em produção HTTPS
+CSRF_COOKIE_SECURE = False         # False em localhost, True em produção HTTPS
+
+# Para permitir que CSRF aceite requests de localhost
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

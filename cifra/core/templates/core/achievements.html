@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block title %}Conquistas - C.I.F.R.A{% endblock %}
+{% block content %}
+<h1>Conquistas</h1>
+<ul class="list-group">
+    {% for achievement in achievements %}
+        <li class="list-group-item">
+            <strong>{{ achievement.name }}</strong> - {{ achievement.description }}
+            <span class="text-muted">({{ achievement.date_awarded|date:"d/m/Y" }})</span>
+        </li>
+    {% empty %}
+        <li class="list-group-item">Nenhuma conquista ainda.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
